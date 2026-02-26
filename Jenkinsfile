@@ -4,11 +4,6 @@ pipeline {
         label 'AGENT-1'
     }
 
-    environment {
-        COURSE = "jenkins"
-        APP_VERSION = ""
-    }
-
     options {
         timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
@@ -19,55 +14,56 @@ pipeline {
         stage('Read Version') {
             steps {
                 script {
-                    def packageJSON = readJSON file: 'package.json'
+
+                    // Debug: confirm file exists
+                    sh 'ls -l'
+
+                    def packageJSON = readJSON file: './package.json'
+
+                    if (packageJSON?.version == null) {
+                        error "Version key not found in package.json"
+                    }
+
                     env.APP_VERSION = packageJSON.version
-                    echo "App version: ${env.APP_VERSION}"
+
+                    echo "App version is: ${env.APP_VERSION}"
                 }
             }
         }
 
         stage('Build') {
             steps {
+                echo "Building version: ${env.APP_VERSION}"
+
                 sh """
-                    echo "Building version: $APP_VERSION"
+                    echo "Shell sees version: $APP_VERSION"
                 """
             }
         }
 
         stage('Test') {
             steps {
-                sh """
-                    echo "Testing"
-                    echo $COURSE
-                """
+                sh 'echo "Testing application"'
             }
         }
 
         stage('Deploy') {
             steps {
-                sh """
-                    echo "Deploying"
-                    echo $COURSE
-                """
+                sh 'echo "Deploying application"'
             }
         }
+    }
 
-    }   // ✅ stages block closes here
-
-    post {   // ✅ post is outside stages
-
+    post {
         always {
             echo 'I will Always say Hello Again'
             cleanWs()
         }
-
         success {
             echo 'I will Run if Success'
         }
-
         failure {
             echo 'I will Run if Failure'
         }
     }
-
-}   // ✅ pipeline closes here
+}
