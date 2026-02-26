@@ -4,10 +4,17 @@ pipeline {
         label 'AGENT-1'
     }
 
+    environment {
+        COURSE = "jenkins"
+        appVersion = ""
+    }
+
     options {
         timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
+
+    
 
     stages {
 
@@ -34,7 +41,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                docker build -t catalogue:${appVersion} ./app
+                docker build -t catalogue:${appVersion} .
                 docker images                   
                 """
             }
