@@ -31,12 +31,23 @@ pipeline {
             }
         }
 
+
+        stage('install dependencies') {
+            steps () {
+                script {
+                    sh """
+                        npm install
+                    """
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 echo "Building version: ${env.APP_VERSION}"
 
                 sh """
-                    echo "Shell sees version: $APP_VERSION"
+                   
                 """
             }
         }
