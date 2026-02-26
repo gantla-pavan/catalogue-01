@@ -14,23 +14,12 @@ pipeline {
         stage('Read Version') {
             steps {
                 script {
-
-                    // Debug: confirm file exists
-                    // sh 'ls -l'
-
-                    def packageJSON = readJSON file: './package.json'
-
-                    // if (packageJSON?.version == null) {
-                    //     error "Version key not found in package.json"
-                    // }
-
-                    env.APP_VERSION = packageJSON.version
-
-                    echo "App version is: ${env.APP_VERSION}"
+                    def packageJson = readJSON file: 'package.json'
+                    appVersion = packageJson.version // Assign value to the global variable
+                    echo "App version is: ${appVersion}"
                 }
             }
         }
-
 
         stage('Install Dependencies') {
             steps () {
