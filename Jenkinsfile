@@ -47,7 +47,8 @@ pipeline {
                 echo "Building version: ${env.APP_VERSION}"
 
                 sh """
-                   
+                docker build -t catalogue:${appVersion} .
+                docker images                   
                 """
             }
         }
