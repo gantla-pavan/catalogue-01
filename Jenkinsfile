@@ -16,7 +16,7 @@ pipeline {
                 script {
 
                     // Debug: confirm file exists
-                    sh 'ls -l'
+                    // sh 'ls -l'
 
                     def packageJSON = readJSON file: './package.json'
 
