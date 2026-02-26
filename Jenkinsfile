@@ -122,9 +122,9 @@ pipeline {
             steps {
                 // Use the variable we populated in the first stage
                 sh """
-                docker build -t catalogue:${appVersion} .
+                docker build -t catalogue:${appVersion}.
                 docker images                   
-                """
+                  """
             }
         }
         
