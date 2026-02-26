@@ -50,23 +50,14 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh """
-                    echo "Testing version: $APP_VERSION"
-                """
+                
+                    
             }
         }
 
         stage('Deploy') {
 
-            when {
-                expression { params.DEPLOY }
-            }
-
-            steps {
-                sh """
-                    echo "Deploying version: $APP_VERSION"
-                    echo "Deploy triggered by ${params.PERSON}"
-                """
+            
             }
         }
     }
@@ -83,4 +74,3 @@ pipeline {
             echo 'I will Run if Failure'
         }
     }
-}
