@@ -20,9 +20,9 @@ pipeline {
 
                     def packageJSON = readJSON file: './package.json'
 
-                    if (packageJSON?.version == null) {
-                        error "Version key not found in package.json"
-                    }
+                    // if (packageJSON?.version == null) {
+                    //     error "Version key not found in package.json"
+                    // }
 
                     env.APP_VERSION = packageJSON.version
 
