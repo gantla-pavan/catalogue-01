@@ -50,17 +50,25 @@ pipeline {
 
         stage('Test') {
             steps {
+                sh """
+                    echo "Testing"
+                    echo $COURSE
+                """
                 
                     
             }
         }
 
         stage('Deploy') {
+            steps {
+                sh """
+                    echo "Testing"
+                    echo $COURSE
+                """
+            }
 
             
             }
-        }
-    }
 
     post {
         always {
