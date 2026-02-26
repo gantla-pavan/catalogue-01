@@ -32,7 +32,7 @@ pipeline {
         }
 
 
-        stage('install dependencies') {
+        stage('Install Dependencies') {
             steps () {
                 script {
                     sh """
