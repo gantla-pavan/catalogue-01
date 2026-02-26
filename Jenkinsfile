@@ -40,10 +40,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                    echo "Building version: $APP_VERSION"
-                    echo "Hello ${params.PERSON}"
-                    echo "Biography: ${params.BIOGRAPHY}"
-                    echo "Choice: ${params.CHOICE}"
+                    
                 """
             }
         }
@@ -51,8 +48,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh """
-                    echo "Testing"
-                    echo $COURSE
+                    
                 """
                 
                     
@@ -62,8 +58,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                    echo "Testing"
-                    echo $COURSE
+                    
                 """
             }
 
@@ -81,4 +76,5 @@ pipeline {
         failure {
             echo 'I will Run if Failure'
         }
+    }
     }
