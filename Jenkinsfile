@@ -58,7 +58,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    echo "Running tests..."
+                    
                 }
             }
         }
@@ -66,7 +66,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo "Deploy stage..."
+                    
                 }
             }
         }
