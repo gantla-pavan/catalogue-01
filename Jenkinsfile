@@ -119,14 +119,15 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                // Use the variable we populated in the first stage
-                sh """
-                docker build -t catalogue:${appVersion}.
-                docker images                   
-                  """
-            }
-        }
+    steps {
+        sh """
+        echo "Listing all files in workspace:"
+        ls -R
+        # This will fail again until we find the right path
+        docker build -t catalogue:${appVersion} . 
+        """
+    }
+}
         
         // ... Test and Deploy
     }
