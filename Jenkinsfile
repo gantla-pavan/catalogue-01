@@ -42,8 +42,10 @@ pipeline {
        stage('Sonar Scan') {
     steps {
         script {
-            def scannerHome = tool 'SonarScanner'  // match the name above
-            withSonarQubeEnv('SonarCloud') {
+            // Match this name exactly with what you configured in Global Tool Configuration
+            def scannerHome = tool 'SonarScanner'
+
+            withSonarQubeEnv('SonarCloud') {  // Must match your SonarCloud server name
                 sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=gantla-pavan_catalogue-01 \
                     -Dsonar.organization=gantla-pavan \
