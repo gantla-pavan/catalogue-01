@@ -40,16 +40,12 @@ pipeline {
                      withAWS(region:'us-east-1',credentials:'aws-credentials') {
                         sh """
                           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
-
-                          docker build ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
-
-                          docker images
-                          docker push ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
-
-                          
+                         docker build ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+                         docker images
+                          docker push ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}                         
                         """
     
-}
+
                     }
                 }
             }
@@ -88,3 +84,4 @@ pipeline {
             echo 'Pipeline is aborted'
         }
     }
+}
