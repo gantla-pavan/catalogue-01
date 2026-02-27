@@ -173,13 +173,22 @@ pipeline {
             }
         }
 
-        // stage('Quality Gate') {
-        //     steps {
-        //         timeout(time: 5, unit: 'MINUTES') {
-        //             waitForQualityGate abortPipeline: true
-        //         }
-        //     }
-        // }
+       stage('Quality Gate') {
+    steps {
+        script {
+            timeout(time: 1, unit: 'MINUTES') {
+                // Wait for SonarCloud Quality Gate and store the result in qg
+                def qg = waitForQualityGate()
+                echo "Quality Gate status: ${qg.status}"
+
+                // Optionally abort pipeline if Quality Gate failed
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+                }
+            }
+        }
+    }
+}
 
         stage('Build & Push Image') {
             steps {
