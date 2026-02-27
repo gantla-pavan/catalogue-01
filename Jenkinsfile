@@ -120,16 +120,38 @@ pipeline {
 
         stage('Build') {
     steps {
+        script {
         sh """
-        echo "Listing all files in workspace:"
-        ls -R
-        # This will fail again until we find the right path
+        
         docker build -t catalogue:${appVersion} . 
+        docker images
         """
+    }
+    }
+}
+
+
+
+stage('Test') {
+    steps {
+        script {
+        
+    }
+    }
+}
+
+
+stage('Deploy') {
+    steps {
+        script {
+        
+        
+        
+    }
     }
 }
         
-        // ... Test and Deploy
+
     }
 
     post {
