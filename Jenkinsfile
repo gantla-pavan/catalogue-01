@@ -40,29 +40,23 @@ pipeline {
             }
         }
 
+        stage('Install SonarScanner') {
+            steps {
+                sh 'npm install -g sonar-scanner'
+            }
+        }
+
         stage('Sonar Scan') {
             steps {
                 script {
-                    // Try to fetch the SonarScanner tool
-                    def scannerHome = null
-                    try {
-                        scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                        echo "SonarScanner found at: ${scannerHome}"
-                    } catch (err) {
-                        error "SonarScanner is not installed or misconfigured! Check Manage Jenkins → Global Tool Configuration."
-                    }
-
-                    // Run SonarCloud scan
-                    withSonarQubeEnv('SonarCloud') { 
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=gantla-pavan_catalogue-01 \
-                            -Dsonar.organization=gantla-pavan \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=https://sonarcloud.io \
-                            -Dsonar.login=${SONAR_AUTH_TOKEN}
-                        """
-                    }
+                    sh """
+                        sonar-scanner \
+                        -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+                        -Dsonar.organization=gantla-pavan \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=https://sonarcloud.io \
+                        -Dsonar.login=${SONAR_AUTH_TOKEN}
+                    """
                 }
             }
         }
