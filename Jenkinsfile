@@ -33,43 +33,35 @@ pipeline {
             }
         }
 
-
-
         stage('Unit Test') {
             steps {
                 sh 'npm test'
             }
         }
 
-
         stage('Sonar Scan') {
-            environment {
-                def scannerHome = tool 'sonar-8.0'
-            }
             steps {
                 script {
+                    def scannerHome = tool 'sonar-8.0'
                     withSonarQubeEnv('Sonar-Server') {
-                sh "${scannerHome}/bin/sonar-scanner"                      
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
         }
-    }
-} 
 
         stage('Build & Push Image') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
                     sh """
-                        # Login to ECR
                         aws ecr get-login-password --region us-east-1 | \
                         docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
 
-                        # Build Docker image
                         docker build -t ${PROJECT}/${COMPONENT}:latest .
 
-                        # Tag image for ECR
                         docker tag ${PROJECT}/${COMPONENT}:latest \
                         ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
 
-                        # Push to ECR
                         docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
 
                         docker images
