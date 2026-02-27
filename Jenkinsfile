@@ -40,15 +40,15 @@ pipeline {
         }
 
         stage('Sonar Scan') {
-            steps {
-                script {
-                    def scannerHome = tool 'sonar-8.0'
-                    withSonarQubeEnv('Sonar-Server') {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
+    steps {
+        script {
+            def scannerHome = tool 'sonar-8.0'
+            withSonarQubeEnv('sonar-server') {
+                sh "${scannerHome}/bin/sonar-scanner"
             }
         }
+    }
+}
 
         stage('Build & Push Image') {
             steps {
