@@ -18,15 +18,6 @@ pipeline {
 
     stages {
 
-        stage('List Installed Tools') {
-            steps {
-                script {
-                    println("Available tools on this agent:")
-                    println(hudson.tools.ToolDescriptor.all().collect { it.name })
-                }
-            }
-        }
-
         stage('Read Version') {
             steps {
                 script {
@@ -52,10 +43,17 @@ pipeline {
         stage('Sonar Scan') {
             steps {
                 script {
-                    // Fetch SonarScanner installed via Jenkins
-                    def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    // Try to fetch the SonarScanner tool
+                    def scannerHome = null
+                    try {
+                        scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                        echo "SonarScanner found at: ${scannerHome}"
+                    } catch (err) {
+                        error "SonarScanner is not installed or misconfigured! Check Manage Jenkins → Global Tool Configuration."
+                    }
 
-                    withSonarQubeEnv('SonarCloud') { // Must match your SonarCloud server name
+                    // Run SonarCloud scan
+                    withSonarQubeEnv('SonarCloud') { 
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=gantla-pavan_catalogue-01 \
