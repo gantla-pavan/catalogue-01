@@ -1,90 +1,3 @@
-// pipeline {
-
-//     agent {
-//         label 'AGENT-1'
-//     }
-
-//     environment {
-//         COURSE = "jenkins"
-//         appVersion = ""
-//     }
-
-//     options {
-//         timeout(time: 10, unit: 'MINUTES')
-//         disableConcurrentBuilds()
-//     }
-
-    
-
-//     stages {
-
-//         stage('Read Version') {
-//             steps {
-//                 script {
-//                     def packageJson = readJSON file: 'package.json'
-//                     appVersion = packageJson.version // Assign value to the global variable
-//                     echo "App version is: ${appVersion}"
-//                 }
-//             }
-//         }
-
-//         stage('Install Dependencies') {
-//             steps () {
-//                 script {
-//                     sh """
-//                         npm install
-//                     """
-//                 }
-//             }
-//         }
-
-//         stage('Build') {
-//             steps {
-//                 sh """
-//                 docker build -t catalogue:${appVersion} .
-//                 docker images                   
-//                 """
-//             }
-//         }
-
-//         stage('Test') {
-//             steps {
-//                 sh """
-
-//                 """
-//             }
-//         }
-
-//         stage('Deploy') {
-//             steps {
-//                 sh """
-
-//                 """
-               
-//             }
-//         }
-//     }
-
-//     post {
-//         always {
-//             echo 'I will Always say Hello Again'
-//             cleanWs()
-//         }
-//         success {
-//             echo 'I will Run if Success'
-//         }
-//         failure {
-//             echo 'I will Run if Failure'
-//         }
-//     }
-// }
-
-
-
-
-// 1. Define the variable here so it can be modified by stages
-
-
 pipeline {
     agent {
         label 'AGENT-1'
@@ -93,7 +6,9 @@ pipeline {
     environment {
         COURSE = "jenkins"
         appVersion = ""
-        // Move appVersion out of here if you need to change its value dynamically
+        ACC_ID    = "515497299016"
+        PROJECT   = "roboshop"
+        COMPONENT = "catalogue"
     }
 
     options {
@@ -102,62 +17,74 @@ pipeline {
     }
 
     stages {
+
         stage('Read Version') {
             steps {
                 script {
                     def packageJson = readJSON file: 'package.json'
-                    appVersion = packageJson.version 
-                    echo "App version is: ${appVersion}"
+                    env.appVersion = packageJson.version
+                    echo "App version is: ${env.appVersion}"
                 }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh "npm install"
+                sh 'npm install'
             }
         }
 
         stage('Build') {
-    steps {
-        script {
-        sh """
-        
-        docker build -t catalogue:${appVersion} . 
-        docker images
-        """
-    }
-    }
+            steps {
+                script {
+                     withAWS(region:'us-east-1',credentials:'aws-credentials') {
+                        sh """
+                          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+
+                          docker build ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+
+                          docker images
+                          docker push ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+
+                          
+                        """
+    
 }
+                    }
+                }
+            }
+        }
 
+        stage('Test') {
+            steps {
+                script {
+                    echo "Running tests..."
+                }
+            }
+        }
 
-
-stage('Test') {
-    steps {
-        script {
-        
-    }
-    }
-}
-
-
-stage('Deploy') {
-    steps {
-        script {
-        
-        
-        
-    }
-    }
-}
-        
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "Deploy stage..."
+                }
+            }
+        }
 
     }
 
     post {
         always {
-            echo 'I will Always say Hello Again'
+            echo 'I will always say Hello again!'
             cleanWs()
         }
+        success {
+            echo 'I will run if success'
+        }
+        failure {
+            echo 'I will run if failure'
+        }
+        aborted {
+            echo 'Pipeline is aborted'
+        }
     }
-}
