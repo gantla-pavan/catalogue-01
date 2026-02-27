@@ -39,11 +39,12 @@ pipeline {
             }
         }
 
-        stage('Sonar Scan') {
+       stage('Sonar Scan') {
     steps {
         script {
+            def scannerHome = tool 'SonarScanner'  // match the name above
             withSonarQubeEnv('SonarCloud') {
-                sh "sonar-scanner \
+                sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=gantla-pavan_catalogue-01 \
                     -Dsonar.organization=gantla-pavan \
                     -Dsonar.sources=. \
