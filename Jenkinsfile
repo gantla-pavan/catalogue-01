@@ -3,16 +3,11 @@ pipeline {
         label 'AGENT-1'
     }
 
-    tools {
-        // This must match the exact name you configured in Manage Jenkins → Global Tool Configuration → SonarQube Scanner
-        sonarScanner 'SonarScanner'
-    }
-
     environment {
-        COURSE          = "jenkins"
-        ACC_ID          = "515497299016"
-        PROJECT         = "roboshop"
-        COMPONENT       = "catalogue"
+        COURSE           = "jenkins"
+        ACC_ID           = "515497299016"
+        PROJECT          = "roboshop"
+        COMPONENT        = "catalogue"
         SONAR_AUTH_TOKEN = credentials('sonarcloud-token') // Inject SonarCloud token here
     }
 
@@ -22,6 +17,15 @@ pipeline {
     }
 
     stages {
+
+        stage('List Installed Tools') {
+            steps {
+                script {
+                    println("Available tools on this agent:")
+                    println(hudson.tools.ToolDescriptor.all().collect { it.name })
+                }
+            }
+        }
 
         stage('Read Version') {
             steps {
@@ -48,10 +52,12 @@ pipeline {
         stage('Sonar Scan') {
             steps {
                 script {
-                    // The 'sonarScanner' tool is now available in PATH, no need to manually locate
-                    withSonarQubeEnv('SonarCloud') {  // Must match your SonarCloud server name configured in Jenkins
+                    // Fetch SonarScanner installed via Jenkins
+                    def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+                    withSonarQubeEnv('SonarCloud') { // Must match your SonarCloud server name
                         sh """
-                            sonar-scanner \
+                            ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=gantla-pavan_catalogue-01 \
                             -Dsonar.organization=gantla-pavan \
                             -Dsonar.sources=. \
