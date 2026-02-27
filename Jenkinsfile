@@ -44,6 +44,10 @@ pipeline {
                         # Build Docker image
                         docker build -t ${PROJECT}/${COMPONENT}:latest .
 
+                        # Tag image for ECR
+                        docker tag ${PROJECT}/${COMPONENT}:latest \
+                        ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
+
                         # Push to ECR
                         docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
 
