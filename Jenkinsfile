@@ -42,9 +42,13 @@ pipeline {
         stage('Sonar Scan') {
     steps {
         script {
-            def scannerHome = tool 'sonar-8.0'
-            withSonarQubeEnv('sonar-server') {
-                sh "${scannerHome}/bin/sonar-scanner"
+            withSonarQubeEnv('SonarCloud') {
+                sh "sonar-scanner \
+                    -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+                    -Dsonar.organization=gantla-pavan \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.login=${SONAR_AUTH_TOKEN}"
             }
         }
     }
