@@ -8,7 +8,7 @@ pipeline {
         ACC_ID           = "515497299016"
         PROJECT          = "roboshop"
         COMPONENT        = "catalogue"
-        SONAR_AUTH_TOKEN = credentials('sonarcloud-token') // Inject SonarCloud token here
+        SONAR_AUTH_TOKEN = credentials('sonarcloud-token')
     }
 
     options {
@@ -40,17 +40,11 @@ pipeline {
             }
         }
 
-        stage('Install SonarScanner') {
-            steps {
-                sh 'npm install -g sonar-scanner'
-            }
-        }
-
         stage('Sonar Scan') {
             steps {
                 script {
                     sh """
-                        sonar-scanner \
+                        npx sonar-scanner \
                         -Dsonar.projectKey=gantla-pavan_catalogue-01 \
                         -Dsonar.organization=gantla-pavan \
                         -Dsonar.sources=. \
