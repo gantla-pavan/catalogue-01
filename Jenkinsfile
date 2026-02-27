@@ -8,6 +8,7 @@ pipeline {
         ACC_ID    = "515497299016"
         PROJECT   = "roboshop"
         COMPONENT = "catalogue"
+        SONAR_AUTH_TOKEN = credentials('sonarcloud-token') // Inject SonarCloud token here
     }
 
     options {
@@ -39,23 +40,25 @@ pipeline {
             }
         }
 
-       stage('Sonar Scan') {
-    steps {
-        script {
-            // Match this name exactly with what you configured in Global Tool Configuration
-            def scannerHome = tool 'SonarScanner'
+        stage('Sonar Scan') {
+            steps {
+                script {
+                    // Match this name exactly with what you configured in Jenkins Global Tool Configuration
+                    def scannerHome = tool 'SonarScanner'
 
-            withSonarQubeEnv('SonarCloud') {  // Must match your SonarCloud server name
-                sh "${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=gantla-pavan_catalogue-01 \
-                    -Dsonar.organization=gantla-pavan \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.login=${SONAR_AUTH_TOKEN}"
+                    withSonarQubeEnv('SonarCloud') {  // Must match your SonarCloud server name configured in Jenkins
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+                            -Dsonar.organization=gantla-pavan \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=https://sonarcloud.io \
+                            -Dsonar.login=${SONAR_AUTH_TOKEN}
+                        """
+                    }
+                }
             }
         }
-    }
-}
 
         stage('Build & Push Image') {
             steps {
