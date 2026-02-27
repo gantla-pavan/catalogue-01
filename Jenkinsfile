@@ -33,6 +33,14 @@ pipeline {
             }
         }
 
+
+
+        stage('Unit Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
         stage('Build & Push Image') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
