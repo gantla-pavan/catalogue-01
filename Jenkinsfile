@@ -55,6 +55,16 @@ pipeline {
             }
         }
 
+        stage('Quality Gate') {
+    steps {
+        timeout(time: 5, unit: 'MINUTES') {
+            // This step waits for SonarCloud to process the results
+            // and returns the status of your "ROBOSHOP_GATE"
+            waitForQualityGate abortPipeline: true
+        }
+    }
+}
+
         stage('Build & Push Image') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
