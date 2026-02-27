@@ -4,8 +4,7 @@ pipeline {
     }
 
     environment {
-        COURSE = "jenkins"
-        appVersion = ""
+        COURSE    = "jenkins"
         ACC_ID    = "515497299016"
         PROJECT   = "roboshop"
         COMPONENT = "catalogue"
@@ -34,39 +33,37 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build & Push Image') {
             steps {
-                script {
-                     withAWS(region:'us-east-1',credentials:'aws-credentials') {
-                        sh """
-                          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
-                         docker build ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
-                         docker images
-                          docker push ${PROJECT}/${COMPONENT}:latest ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}                         
-                        """
-    
+                withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
+                    sh """
+                        # Login to ECR
+                        aws ecr get-login-password --region us-east-1 | \
+                        docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
 
-                    }
+                        # Build Docker image
+                        docker build -t ${PROJECT}/${COMPONENT}:latest .
+
+                        # Push to ECR
+                        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
+
+                        docker images
+                    """
                 }
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    
-                }
+                echo "Running tests..."
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    
-                }
+                echo "Deploy stage..."
             }
         }
-
     }
 
     post {
