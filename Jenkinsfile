@@ -189,28 +189,7 @@ pipeline {
         }
     }
 }
-        stage('Build & Push Image') {
-            steps {
-                withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
-                    sh '''
-                        aws ecr get-login-password --region us-east-1 | \
-                        docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
-
-                        docker build -t ${PROJECT}/${COMPONENT}:latest .
-
-                        docker tag ${PROJECT}/${COMPONENT}:latest \
-                        ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${APP_VERSION}
-
-                        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${APP_VERSION}
-
-                        docker images
-                    '''
-                }
-            }
-        }
-
-
-        stage('Dependabot Security Gate') {
+stage('Dependabot Security Gate') {
             environment {
                 GITHUB_OWNER = 'gantla-pavan'
                 GITHUB_REPO  = 'catalogue-01'
@@ -251,6 +230,25 @@ pipeline {
                         echo "✅ Security check passed. No critical vulnerabilities found."
                     fi
                     """
+                }
+            }
+        }
+        stage('Build & Push Image') {
+            steps {
+                withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
+                    sh '''
+                        aws ecr get-login-password --region us-east-1 | \
+                        docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+
+                        docker build -t ${PROJECT}/${COMPONENT}:latest .
+
+                        docker tag ${PROJECT}/${COMPONENT}:latest \
+                        ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${APP_VERSION}
+
+                        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${APP_VERSION}
+
+                        docker images
+                    '''
                 }
             }
         }
