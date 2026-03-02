@@ -173,22 +173,22 @@ pipeline {
             }
         }
 
-//        stage('Quality Gate') {
-//     steps {
-//         timeout(time: 1, unit: 'MINUTES') {
-//             script {
-//                 // Wait for SonarCloud/SonarQube Quality Gate result
-//                 def qg = waitForQualityGate()
+       stage('Quality Gate') {
+    steps {
+        timeout(time: 1, unit: 'MINUTES') {
+            script {
+                // Wait for SonarCloud/SonarQube Quality Gate result
+                def qg = waitForQualityGate()
                 
-//                 if (qg.status != 'OK') {
-//                     error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
-//                 } else {
-//                     echo "Quality Gate passed: ${qg.status}"
-//                 }
-//             }
-//         }
-//     }
-// }
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+                } else {
+                    echo "Quality Gate passed: ${qg.status}"
+                }
+            }
+        }
+    }
+}
         stage('Build & Push Image') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
