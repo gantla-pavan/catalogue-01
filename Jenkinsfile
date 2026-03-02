@@ -149,7 +149,7 @@ stage('Dependabot Security Gate') {
                 echo "Deploy stage..."
             }
         }
-    }
+    
 
     post {
         always {
@@ -166,4 +166,3 @@ stage('Dependabot Security Gate') {
             echo 'Pipeline aborted'
         }
     }
-}
