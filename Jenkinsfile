@@ -209,6 +209,52 @@ pipeline {
             }
         }
 
+
+        stage('Dependabot Security Gate') {
+            environment {
+                GITHUB_OWNER = 'gantla-pavan'
+                GITHUB_REPO  = 'catalogue-01'
+                GITHUB_API   = 'https://api.github.com'
+                GITHUB_TOKEN = 'https://api.github.com/repos/gantla-pavan/catalogue-01/dependabot/alerts'
+            }
+            steps {
+                script {
+                    sh """
+                    echo "Checking Dependabot alerts for ${GITHUB_OWNER}/${GITHUB_REPO}..."
+
+                    # Fetching alerts from the GitHub API
+                    response=$(curl -s \
+                        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                        -H "Accept: application/vnd.github+json" \
+                        "${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dependabot/alerts?per_page=100")
+
+                    # Safety check: Verify if the response is valid JSON
+                    if ! echo "$response" | jq . >/dev/null 2>&1; then
+                        echo "Error: Invalid response from GitHub API. Check your token scopes."
+                        echo "$response"
+                        exit 1
+                    fi
+
+                    # Count open HIGH and CRITICAL alerts using jq
+                    high_critical_open_count=$(echo "${response}" | jq '[.[] 
+                        | select(.state == "open" and (.security_advisory.severity == "high" or .security_advisory.severity == "critical"))
+                    ] | length')
+
+                    echo "Open HIGH/CRITICAL Dependabot alerts: ${high_critical_open_count}"
+
+                    # Fail the pipeline if any high/critical vulnerabilities are found
+                    if [ "${high_critical_open_count}" -gt 0 ]; then
+                        echo "❌ Blocking pipeline due to ${high_critical_open_count} HIGH/CRITICAL vulnerabilities"
+                        echo "$response" | jq '.[] | select(.state=="open" and (.security_advisory.severity=="high" or .security_advisory.severity=="critical")) | {dependency: .dependency.package.name, severity: .security_advisory.severity, summary: .security_advisory.summary}'
+                        exit 1
+                    else
+                        echo "✅ Security check passed. No critical vulnerabilities found."
+                    fi
+                    """
+                }
+            }
+        }
+
         stage('Test') {
             steps {
                 echo "Running tests..."
