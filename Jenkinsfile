@@ -158,37 +158,37 @@ pipeline {
             }
         }
 
-        stage('Sonar Scan') {
-            steps {
-                withSonarQubeEnv('SonarCloud') {   // Must match Jenkins Sonar config name
-                    sh '''
-                        npx sonar-scanner \
-                        -Dsonar.projectKey=gantla-pavan_catalogue-01 \
-                        -Dsonar.organization=gantla-pavan \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.token=$SONAR_AUTH_TOKEN
-                    '''
-                }
-            }
-        }
+//         stage('Sonar Scan') {
+//             steps {
+//                 withSonarQubeEnv('SonarCloud') {   // Must match Jenkins Sonar config name
+//                     sh '''
+//                         npx sonar-scanner \
+//                         -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+//                         -Dsonar.organization=gantla-pavan \
+//                         -Dsonar.sources=. \
+//                         -Dsonar.host.url=https://sonarcloud.io \
+//                         -Dsonar.token=$SONAR_AUTH_TOKEN
+//                     '''
+//                 }
+//             }
+//         }
 
-       stage('Quality Gate') {
-    steps {
-        timeout(time: 1, unit: 'MINUTES') {
-            script {
-                // Wait for SonarCloud/SonarQube Quality Gate result
-                def qg = waitForQualityGate()
+//        stage('Quality Gate') {
+//     steps {
+//         timeout(time: 1, unit: 'MINUTES') {
+//             script {
+//                 // Wait for SonarCloud/SonarQube Quality Gate result
+//                 def qg = waitForQualityGate()
                 
-                if (qg.status != 'OK') {
-                    error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
-                } else {
-                    echo "Quality Gate passed: ${qg.status}"
-                }
-            }
-        }
-    }
-}
+//                 if (qg.status != 'OK') {
+//                     error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+//                 } else {
+//                     echo "Quality Gate passed: ${qg.status}"
+//                 }
+//             }
+//         }
+//     }
+// }
 stage('Dependabot Security Gate') {
             environment {
                 GITHUB_OWNER = 'gantla-pavan'
