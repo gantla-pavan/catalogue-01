@@ -40,19 +40,20 @@ pipeline {
         }
 
         stage('Sonar Scan') {
-            steps {
-                withSonarQubeEnv('SonarCloud') {   // Must match Jenkins Sonar config name
-                    sh '''
-                        npx sonar-scanner \
-                        -Dsonar.projectKey=gantla-pavan_catalogue-01 \
-                        -Dsonar.organization=gantla-pavan \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.token=$SONAR_AUTH_TOKEN
-                    '''
-                }
-            }
+    steps {
+        withSonarQubeEnv('SonarCloud') { 
+            sh """
+                npx sonar-scanner \
+                -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+                -Dsonar.organization=gantla-pavan \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=https://sonarcloud.io \
+                -Dsonar.token=${SONAR_AUTH_TOKEN}
+            """
         }
+    }
+}
+
 
        stage('Quality Gate') {
     steps {
