@@ -7,8 +7,8 @@ pipeline {
         ACC_ID    = "690509490317"
         PROJECT   = "roboshop"
         COMPONENT = "catalogue"
-        SONAR_AUTH_TOKEN = credentials('sonarcloud-token')
-    }
+       SONAR_AUTH_TOKEN = credentials('sonar-token')   
+   }
 
     options {
         timeout(time: 10, unit: 'MINUTES')
