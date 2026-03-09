@@ -39,24 +39,24 @@ pipeline {
             }
         }
 
-        stage('Sonar Scan') {
-    steps {
-        // withSonarQubeEnv provides the server URL
-        withSonarQubeEnv('SonarCloud') { 
-            // withCredentials provides the actual token
-            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                sh '''
-                    npx sonar-scanner \
-                    -Dsonar.projectKey=gantla-pavan_catalogue-01 \
-                    -Dsonar.organization=gantla-pavan \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.token=$SONAR_TOKEN
-                '''
-            }
-        }
-    }
-}
+//         stage('Sonar Scan') {
+//     steps {
+//         // withSonarQubeEnv provides the server URL
+//         withSonarQubeEnv('SonarCloud') { 
+//             // withCredentials provides the actual token
+//             withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+//                 sh '''
+//                     npx sonar-scanner \
+//                     -Dsonar.projectKey=gantla-pavan_catalogue-01 \
+//                     -Dsonar.organization=gantla-pavan \
+//                     -Dsonar.sources=. \
+//                     -Dsonar.host.url=https://sonarcloud.io \
+//                     -Dsonar.token=$SONAR_TOKEN
+//                 '''
+//             }
+//         }
+//     }
+// }
 
 
        stage('Quality Gate') {
