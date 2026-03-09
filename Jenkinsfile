@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        ACC_ID    = "515497299016"
+        ACC_ID    = "690509490317"
         PROJECT   = "roboshop"
         COMPONENT = "catalogue"
         SONAR_AUTH_TOKEN = credentials('sonarcloud-token')
