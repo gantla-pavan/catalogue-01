@@ -48,7 +48,7 @@ pipeline {
                 -Dsonar.organization=gantla-pavan \
                 -Dsonar.sources=. \
                 -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.token=${SONAR_AUTH_TOKEN}
+                -Dsonar.token=${env.SONAR_AUTH_TOKEN}
             """
         }
     }
