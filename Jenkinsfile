@@ -42,14 +42,14 @@ pipeline {
         stage('Sonar Scan') {
     steps {
         withSonarQubeEnv('SonarCloud') { 
-            sh """
+            sh '''
                 npx sonar-scanner \
                 -Dsonar.projectKey=gantla-pavan_catalogue-01 \
                 -Dsonar.organization=gantla-pavan \
                 -Dsonar.sources=. \
                 -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.token=${env.SONAR_AUTH_TOKEN}
-            """
+                -Dsonar.token=$SONAR_AUTH_TOKEN
+            '''
         }
     }
 }
