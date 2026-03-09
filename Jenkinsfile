@@ -218,51 +218,61 @@ pipeline {
         }
 
         stage('Dependabot Security Gate') {
-            steps {
-                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                    script {
+    steps {
+        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+            script {
 
-                        sh '''
-                        echo "Fetching Dependabot alerts..."
+                sh '''
+                echo "Fetching Dependabot alerts..."
 
-                        curl -s \
-                        -H "Authorization: Bearer $GITHUB_TOKEN" \
-                        -H "Accept: application/vnd.github+json" \
-                        https://api.github.com/repos/gantla-pavan/catalogue-01/dependabot/alerts \
-                        > dependabot.json
-                        '''
+                curl -s \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/repos/gantla-pavan/catalogue-01/dependabot/alerts \
+                -o dependabot.json
+                '''
 
-                        def alerts = readJSON file: 'dependabot.json'
+                def alerts = readJSON file: 'dependabot.json'
 
-                        if (!alerts || alerts.size() == 0) {
-                            echo "✅ No Dependabot alerts found."
-                            return
-                        }
+                if (!(alerts instanceof List) || alerts.size() == 0) {
+                    echo "✅ No Dependabot alerts found."
+                    return
+                }
 
-                        def highAlerts = alerts.findAll {
-                            it.security_advisory?.severity in ['high','critical']
-                        }
+                def highAlerts = []
 
-                        if (highAlerts.size() > 0) {
+                for (alert in alerts) {
 
-                            echo "🚨 High/Critical vulnerabilities detected!"
+                    if (alert.containsKey('security_advisory')) {
 
-                            highAlerts.each {
-                                echo "Package: ${it.dependency.package.name}"
-                                echo "Severity: ${it.security_advisory.severity}"
-                                echo "Summary: ${it.security_advisory.summary}"
-                            }
+                        def severity = alert.security_advisory.severity
 
-                            error("Build failed due to high/critical vulnerabilities")
-
-                        } else {
-                            echo "✅ No high/critical vulnerabilities"
+                        if (severity == 'high' || severity == 'critical') {
+                            highAlerts.add(alert)
                         }
                     }
                 }
+
+                if (highAlerts.size() > 0) {
+
+                    echo "🚨 High/Critical vulnerabilities detected!"
+
+                    for (a in highAlerts) {
+                        echo "Package: ${a.dependency.package.name}"
+                        echo "Severity: ${a.security_advisory.severity}"
+                        echo "Summary: ${a.security_advisory.summary}"
+                    }
+
+                    error("Build failed due to high/critical vulnerabilities")
+
+                } else {
+                    echo "✅ No high/critical vulnerabilities"
+                }
+
             }
         }
-
+    }
+}
         stage('Build & Push Image') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
